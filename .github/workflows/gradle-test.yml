@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: ${{ JAVA_VERSION }} != ''
+    if: $JAVA_VERSION != ''
 
     steps:
       - name: Checkout
