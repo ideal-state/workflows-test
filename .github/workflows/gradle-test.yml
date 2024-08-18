@@ -10,7 +10,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: $JAVA_VERSION != ''
+    if: ${{ env.JAVA_VERSION }} != ''
 
     steps:
       - name: Checkout
