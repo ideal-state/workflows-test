@@ -17,3 +17,11 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.javadoc {
+    options {
+        encoding("UTF-8")
+        charset("UTF-8")
+        jFlags("-Dfile.encoding=$encoding")
+    }
+}

@@ -41,34 +41,46 @@ jobs:
       - name: Run test task
         run: ./gradlew test --no-daemon
       
-      - name: Upload reports artifacts
+      - name: Upload test reports artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: test
+          name: test-reports
           path: build/reports/tests/test/
-          retention-days: 3
+          retention-days: 1
+
+      - name: Run javadoc task
+        run: ./gradlew javadoc --no-daemon
+
+      - name: Upload javadoc artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: javadoc
+          path: build/docs/javadoc/
+          retention-days: 1
 
   deploy:
     needs: test
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        run: |
-          git init .
-          git remote add origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          git config --global user.name "GitHub"
-          git config --global user.email "actions@github.com"
-
-      - name: Download reports artifacts
+      - name: Download test reports artifacts
         uses: actions/download-artifact@v4
         with:
-          name: test
-          path: test
+          name: test-reports
+          path: gh-pages/test
+
+      - name: Download javadoc artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: javadoc
+          path: gh-pages/api-docs
 
       - name: Commit and push to gh-pages
         run: |
           HEAD_COMMIT_ID=${{ needs.test.outputs.head_commit_id }}
+          cd gh-pages
+          git init .
+          git remote add origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git add .
           git commit -m "Deployed $HEAD_COMMIT_ID with Gradle test task"
           git branch -M gh-pages
