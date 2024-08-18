@@ -26,6 +26,7 @@ jobs:
 
       - name: Setup gradle
         uses: gradle/actions/setup-gradle@v4
+        run: chmod +x ./gradlew
       
       - name: Run test task
         run: ./gradlew test --no-daemon
