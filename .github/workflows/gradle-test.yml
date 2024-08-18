@@ -4,12 +4,12 @@ on:
   push:
     branches: [ "master" ]
   pull_request:
-    branches: [  ]
+    branches: [ "master" ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: ${{ env.JAVA_VERSION }} != ''
+    if: ${{ JAVA_VERSION }} != ''
 
     steps:
       - name: Checkout
