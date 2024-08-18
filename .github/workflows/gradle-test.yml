@@ -10,11 +10,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: ${{ vars.JAVA_VERSION }} != ''
+    if: ${{ vars.JAVA_VERSION }}
+    outputs:
+      head_commit_id: ${{ steps.get_head_commit_id.outputs.head_commit_id }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Get head commit id
+        id: get_head_commit_id
+        run: |
+          HEAD_COMMIT_ID=$(git rev-parse HEAD)
+          echo "head_commit_id=$HEAD_COMMIT_ID" >> $GITHUB_OUTPUT
 
       - name: Setup java
         uses: actions/setup-java@v4
@@ -45,11 +53,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
+      - name: Checkout
+        run: |
           git init .
           git remote add origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git config --global user.name "GitHub"
+          git config --global user.email "actions@github.com"
 
       - name: Download reports artifacts
         uses: actions/download-artifact@v4
@@ -57,8 +66,10 @@ jobs:
           name: test
           path: test
 
-      - run: |
+      - name: Commit and push to gh-pages
+        run: |
+          HEAD_COMMIT_ID=${{ needs.test.outputs.head_commit_id }}
           git add .
-          git commit -m "Update test reports"
+          git commit -m "Deployed $HEAD_COMMIT_ID with Gradle test task"
           git branch -M gh-pages
-          git push -u origin gh-pages
+          git push -f -u origin gh-pages
