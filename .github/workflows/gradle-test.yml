@@ -82,6 +82,8 @@ jobs:
           git init .
           git remote add origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git add .
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Deployed $HEAD_COMMIT_ID with Gradle test task"
           git branch -M gh-pages
           git push -f -u origin gh-pages
