@@ -45,9 +45,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git init .
+          git remote add origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
       - name: Download reports artifacts
         uses: actions/download-artifact@v4
         with:
           name: test
+          path: test
 
-      - run: echo `ls -la`
+      - run: |
+          git add .
+          git commit -m "Update test reports"
+          git branch -M gh-pages
+          git push -u origin gh-pages
